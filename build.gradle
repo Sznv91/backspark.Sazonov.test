@@ -31,7 +31,6 @@ dependencies {
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
 	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
-//	implementation 'io.springfox:springfox-boot-starter:3.0.0'
 	implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
