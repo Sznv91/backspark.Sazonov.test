@@ -73,9 +73,9 @@ class SockRepositoryTest {
 
     @Test
     public void testFindAllByColor() {
-        List<Sock> socks = repository.findAll("Зелёный");
-        assertEquals(2, socks.size());
-        assertEquals("Зелёный", socks.get(0).getColor());
+        List<Sock> socks = repository.findAll("green");
+        assertEquals(1, socks.size());
+        assertEquals("green", socks.get(0).getColor());
     }
 
     @Test
