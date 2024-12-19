@@ -39,22 +39,21 @@ class SockControllerTest {
         ResponseEntity<?> response = sockController.getFilteredSockCount(null, null, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(socks, response.getBody());
+        assertEquals(15L, response.getBody());
     }
 
     @Test
     public void testGetFilteredSock() {
-        when(sockService.getAllSocks(50, Operator.moreThan)).thenReturn(List.of(new Sock("red", 80, 10), new Sock("yellow", 30, 10)));
-        when(sockService.getAllSocks("blue", 60, Operator.equal)).thenReturn(List.of(new Sock("blue", 60, 5), new Sock("yellow", 30, 10)));
+        when(sockService.getAllSocks(50, Operator.moreThan)).thenReturn(List.of(new Sock("red", 80, 10)));
+        when(sockService.getAllSocks("blue", 60, Operator.equal)).thenReturn(List.of(new Sock("blue", 60, 5)));
 
         ResponseEntity<?> response1 = sockController.getFilteredSockCount(null, Operator.moreThan, 50);
         ResponseEntity<?> response2 = sockController.getFilteredSockCount("blue", Operator.equal, 60);
 
         assertEquals(HttpStatus.OK, response1.getStatusCode());
         assertEquals(HttpStatus.OK, response2.getStatusCode());
-        assertEquals(1, ((List<Sock>) response1.getBody()).size() - 1);
-        assertEquals(1, ((List<Sock>) response2.getBody()).size() - 1);
-        assertEquals(5, ((List<Sock>) response2.getBody()).get(0).getQuantity());
+        assertEquals(10L, response1.getBody());
+        assertEquals(5L, response2.getBody());
     }
 
     @Test

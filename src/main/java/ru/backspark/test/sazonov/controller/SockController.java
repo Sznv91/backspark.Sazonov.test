@@ -25,6 +25,7 @@ import ru.backspark.test.sazonov.repository.SortingDirection;
 import ru.backspark.test.sazonov.repository.SortingType;
 import ru.backspark.test.sazonov.service.SockService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -38,43 +39,41 @@ public class SockController {
 
     @GetMapping(value = "/")
     @Operation(summary = "Get all sock count or get the filtered count of socks", description = "Returns the count of socks with the specified filters. The \"operator\" and the \"cottonPercentage\" are used together.")
-    public ResponseEntity<?> getFilteredSockCount(
+    public ResponseEntity<Long> getFilteredSockCount(
             @RequestParam(required = false) String color,
             @RequestParam(required = false) Operator operator,
             @RequestParam(required = false) Integer cottonPercentage) {
+        long result = 0;
+        List<Sock> resultList = new ArrayList<>();
         if (color == null && operator == null && cottonPercentage == null) {
             log.info("Received request to get all socks summary");
-            List<Sock> result = sockService.getAllSocks();
-            if (result.size() == 0) {
-                return new ResponseEntity<>("0", HttpStatus.OK);
-            }
-            return new ResponseEntity<>(sockService.getAllSocks(), HttpStatus.OK);
+            resultList = sockService.getAllSocks();
+        } else if (color != null && operator == null && cottonPercentage == null) {
+            log.info("Received request to get all socks summary with filter color:{}", color);
+            resultList = sockService.getAllSocks(color);
         } else {
-            log.info("Received request to get filtered sock count for color {}, operator {}, and cotton percentage {}", color, operator, cottonPercentage);
-            if (color != null && operator == null && cottonPercentage == null) {
-                List<Sock> result = sockService.getAllSocks(color);
-                return new ResponseEntity<>(result.size() == 0 ? 0L : result, HttpStatus.OK);
-            }
-            if (color != null && operator == null || cottonPercentage == null) {
+            try {
+                log.info("Received request to get all socks summary with filter color:{}, operator:{}, cottonPercentage{}", color, operator, cottonPercentage);
+                resultList = color == null ? sockService.getAllSocks(cottonPercentage, operator) : sockService.getAllSocks(color, cottonPercentage, operator);
+            } catch (NullPointerException e) {
                 throw new IncorrectInputException("Поля \"operator\" и \"cottonPercentage\" должны использоваться совместно", HttpStatus.BAD_REQUEST);
             }
-            if (color == null && operator == null) {
-                throw new IncorrectInputException("Поля \"operator\" и \"cottonPercentage\" должны использоваться совместно", HttpStatus.BAD_REQUEST);
-            }
-            return new ResponseEntity<>(color == null ? sockService.getAllSocks(cottonPercentage, operator) : sockService.getAllSocks(color, cottonPercentage, operator), HttpStatus.OK);
         }
+
+        result = resultList.stream().mapToLong(Sock::getQuantity).sum();
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 
     @GetMapping(value = "/rage")
     @Operation(summary = "Get the filtering by cotton percentage range and sorting by color and percentage of cotton", description = "Returns the count of socks with the specified filters")
-    public ResponseEntity<?> getFilteredSockCount(
+    public ResponseEntity<List<Sock>> getFilteredSockCount(
             @RequestParam int minCottonPercentage,
             @RequestParam int maxCottonPercentage,
             @RequestParam(required = false) SortingType sortingType,
             @RequestParam(required = false) SortingDirection sortingDirection) {
+        log.info("Received request to get socks with filter minCottonPercentage:{}, maxCottonPercentage:{}, sortingType{}, sortingDirection{}", minCottonPercentage, maxCottonPercentage, sortingType, sortingDirection);
         return new ResponseEntity<>(sockService.getFilteredSocks(minCottonPercentage, maxCottonPercentage, sortingType, sortingDirection), HttpStatus.OK);
-
     }
 
     @PostMapping("/income")
@@ -98,7 +97,7 @@ public class SockController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update sock details", description = "Updates the details of a sock by its ID")
-    public ResponseEntity<?> updateSock(
+    public ResponseEntity<Sock> updateSock(
             @PathVariable Long id,
             @RequestParam(required = false) String color,
             @RequestParam(required = false) Integer cottonPercentage,

@@ -65,15 +65,9 @@ public class SockService {
         return result;
     }
 
-    public Object getAllSocks(String color, int percentCotton, Operator operator) {
+    public List<Sock> getAllSocks(String color, int percentCotton, Operator operator) {
         log.info("Retrieved filtered socks by color {} percentCotton {} and operator {}", color, percentCotton, operator);
-        List<Sock> result = sockRepository.findAll(color, percentCotton, operator);
-        if (result.size() == 0) {
-            return 0L;
-        } else if (result.size() == 1 && operator.equals(Operator.equal)) {
-            return result.get(0).getQuantity();
-        }
-        return result;
+        return sockRepository.findAll(color, percentCotton, operator);
     }
 
     public List<Sock> getAllSocks(String color) {
