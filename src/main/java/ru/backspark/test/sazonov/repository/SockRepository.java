@@ -48,28 +48,27 @@ public class SockRepository {
 
     public List<Sock> findAll(int percentCotton, Operator operator) {
         StringBuilder builder = new StringBuilder("SELECT s FROM Sock s WHERE s.cottonPercentage ");
-        String query = buildQueryByOperator(builder, operator);
-        return entityManager.createQuery(query, Sock.class).setParameter("percentCotton", percentCotton).getResultList();
+        String query = buildQueryByOperator(builder, operator, percentCotton);
+        return entityManager.createQuery(query, Sock.class).getResultList();
     }
 
     public List<Sock> findAll(String color, int percentCotton, Operator operator) {
         StringBuilder builder = new StringBuilder("SELECT s FROM Sock s WHERE s.color=:color AND s.cottonPercentage");
-        String query = buildQueryByOperator(builder, operator);
-        return entityManager.createQuery(query, Sock.class).setParameter("color", color).setParameter("percentCotton", percentCotton).getResultList();
+        String query = buildQueryByOperator(builder, operator, percentCotton);
+        return entityManager.createQuery(query, Sock.class).setParameter("color", color).getResultList();
     }
 
-    private String buildQueryByOperator(StringBuilder sb, Operator operator) {
+    private String buildQueryByOperator(StringBuilder sb, Operator operator, int percentCotton) {
         switch (operator) {
             case lessThan:
-                sb.append("<");
+                sb.append("<").append(percentCotton + 1); //Для попадания числа "percentCotton" в фильтруемый диапазон. <= x
                 break;
             case moreThan:
-                sb.append(">");
+                sb.append(">").append(percentCotton - 1); //Для попадания числа "percentCotton" в фильтруемый диапазон. >= x
                 break;
             default:
-                sb.append("=");
+                sb.append("=").append(percentCotton);
         }
-        sb.append(":percentCotton");
         return sb.toString();
     }
 

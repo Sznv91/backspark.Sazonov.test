@@ -74,7 +74,7 @@ class SockRepositoryTest {
     @Test
     public void testFindAllByOperator() {
         List<Sock> socks = repository.findAll(60, Operator.moreThan);
-        assertEquals(3, socks.size());
+        assertEquals(4, socks.size());
     }
 
     @Test
