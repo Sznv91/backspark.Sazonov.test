@@ -8,11 +8,11 @@ CREATE TABLE sock
     CONSTRAINT sock_uq unique (color, cotton_percentage)
 );
 
-INSERT INTO sock (id, color, cotton_percentage, quantity)
-VALUES  (2,'red',80,20),
-        (3,'blue',60,10),
-        (4,'green',70,14),
-        (1,'Переименован',14,14),
-        (5,'Желтый',18,30),
-        (6,'Зелёный',16,32),
-        (7,'Зелёный',20,5);
+INSERT INTO sock (color, cotton_percentage, quantity)
+VALUES  ('red',80,20),
+        ('blue',60,10),
+        ('green',70,14),
+        ('Переименован',14,14),
+        ('Желтый',18,30),
+        ('Зелёный',16,32),
+        ('Зелёный',20,5);

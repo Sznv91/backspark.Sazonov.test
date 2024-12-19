@@ -1,4 +1,4 @@
 INSERT INTO sock (color, cotton_percentage, quantity)
-VALUES ('red', 80, 10),
-       ('blue', 60, 5),
-       ('green', 70, 7);
+VALUES ('Красный', 41, 10),
+       ('Жёлтый', 62, 5),
+       ('Оранжевый', 24, 7);
